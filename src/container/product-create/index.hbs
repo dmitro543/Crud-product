@@ -1,0 +1,25 @@
+<div class="page">
+    <div class="page-content">Створення товару</div>
+    <div class="product">
+        <h6 class="main">Інформація про товар</h6>
+        <form method="POST" action="/product-create">
+          <div class="info">
+            <div class="content">
+              <label for="name" class="form-label">Назва товару</label>
+              <input type="text" name="name" class="content-input" value="{{name}}">
+            </div>
+            <div class="content">
+              <label for="price" class="form-label">ціна</label>
+              <input type="number" name="price" class="content-input" value="{{price}}">
+            </div>
+         </div>
+          <div class="content-field">
+             <label for="description" class="form-label">Короткий опис товару</label>
+             <textarea rows="3" name="description" class="field"></textarea>
+           </div>
+           <span class="display">Відображається у картці товару</span>
+           <button class="content-button">Створити товар</button>
+          </div>
+        </form>
+    </div>
+</div>

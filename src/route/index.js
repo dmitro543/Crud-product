@@ -50,6 +50,67 @@ class User {
     };
   }
 
+class Product {
+   static #list = [];
+
+   constructor(name, price, description) {
+     this.name = name
+     this.price = price
+     this.description = description
+     this.id = Math.floor(Math.random() * 100000)
+     this.createDate = () => {
+      this.date = new Date().toISOString()
+     }
+   }
+
+   static getlist = () => this.#list
+
+   checkId = (id) => this.id === id
+
+   static add = (product) => {
+     this.#list.push(product)
+   }
+
+   static getById = (id) =>
+     this.#list.find((product) => product.id === id)
+
+  static deleteBuid = (id) => {
+    const index = this.#list.findIndex(
+      (product) => product.id === id,
+    )
+
+    if(index !== -1) {
+      this.#list.splice(index, 1)
+      return true
+    } else {
+      return false
+    }
+  }
+
+  static updateById = (id, data) => {
+    const product = this.getById(id)
+    const { name, price, description } = data;
+
+    if(product) {
+      if(name) {
+        product.name = name
+      }
+
+      if(price) {
+        product.price = price
+      }
+
+      if(description) {
+        product.description = description
+      }
+
+      return true
+    } else {
+      return false
+    }
+  }
+}
+
 // ================================================================
 
 // router.get Створює нам один ентпоїнт
@@ -58,7 +119,7 @@ class User {
 router.get('/', function (req, res) {
   // res.render генерує нам HTML сторінку
 
-  const List = User.getlist()
+  const list = User.getlist()
 
   // ↙️ cюди вводимо назву файлу з сontainer
   res.render('index', {
@@ -67,8 +128,8 @@ router.get('/', function (req, res) {
 
     data: {
       users: {
-        List,
-        isEmpty: List.length === 0
+        list,
+        isEmpty: list.length === 0
       },
     }
   })
@@ -142,6 +203,85 @@ router.get('/crud-product', function (req, res) {
     layout: 'crud-product',
   })
   //                  ↑↑ сюди вводимо JSON дані
+})
+
+router.get('/product-create', function (req, res) {
+  const list = Product.getlist()
+
+  res.render('product-create', {
+    style: 'product-create',
+    link: '/product-list',
+  })                
+})
+
+router.post('/product-create', function (req, res) {
+  const { name, price, description } = req.body
+
+  const product = new Product(name, price, description)
+
+  Product.add(product)
+
+  console.log(Product.getlist())
+
+  res.render('product-alert', {
+    style: 'product-alert',
+    info: 'Товар успішно додано',
+  })
+  //                  ↑↑ сюди вводимо JSON дані
+})
+
+// router.get('/product-alert', function (req, res) {
+//   res.render('product-alert', {
+//     style: 'product-alert',
+//     data: {
+//        link: '/product-list?id={{id}}',
+//     }
+//   })
+//   //                  ↑↑ сюди вводимо JSON дані
+// })
+
+router.get('/product-list', function (req, res) {
+  const list = Product.getlist();
+  console.log(list)
+
+  res.render('product-list', {
+    style: 'product-list',
+    data: {
+      products: {
+        list,
+        isEmpty: list.length === 0,
+      }
+    }
+  })
+  //                  ↑↑ сюди вводимо JSON дані
+})
+
+router.get('/product-edit', function (req, res) {
+  const { id } = req.query
+
+  const product = Product.getById(Number(id))
+
+  if (product) {
+    return res.render('product-edit', {
+      style: 'product-edit',
+      data: {
+         name: product.name,
+         price: product.price,
+         description: product.description,
+      }
+    })
+  }
+  //                  ↑↑ сюди вводимо JSON дані
+})
+
+router.get('/product-delete', function (req, res) {
+  const { id } = req.query
+  Product.deleteBuid(Number(id))
+
+  res.render('product-alert', {
+    style: 'product-alert',
+    info: 'Товар видалений'
+  })
 })
 
 // ================================================================
